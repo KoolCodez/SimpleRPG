@@ -12,6 +12,8 @@ import Utility.Images;
 import Utility.PointMap;
 import Utility.TextureUtil;
 import world.World;
+import world.Things.Thing;
+import world.materials.Material;
 
 public class Core {
 	public static BufferedImage image;
@@ -27,13 +29,16 @@ public class Core {
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		f.setBounds(0, 0, d.width, d.height);
 		image = Images.getImage("Orange.png", 100, 100);
+		Thing t = new Thing(0, 0, 100, 100, "Orange.png", new Material(), 100, 1);
 		JPanel panel = new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
 				//g.drawImage(image, 0, 0, null);
-				TextureUtil.drawImage(g, image, rotate, 20, 20);
-				rotate++;
-				g.drawRect(20, 20, 100, 100);
+				t.draw(g);
+				t.enactForce(5.1, 45);
+				t.physUpdate();
+				//rotate++;
+				//g.drawRect(20, 20, 100, 100);
 			}
 		};
 		panel.setVisible(true);

@@ -1,5 +1,6 @@
 package world.Things;
 
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.geom.Ellipse2D;
@@ -22,12 +23,16 @@ public class Thing {
 	private double mass;
 	private int layer;
 
-	public Thing(double x, double y, double w, double h, String path, Material m) {
+	public Thing(double x, double y, double w, double h, String path, Material m, double mass, int layer) {
 		outline = new Rectangle2D.Double(x, y, w, h);
 		this.imagePath = path;
 		material = m;
 		xVel = 0;
 		yVel = 0;
+		xForce = 0;
+		yForce = 0;
+		this.mass = mass;
+		this.layer = layer;
 	}
 
 	public Point getPoint() {
@@ -55,23 +60,52 @@ public class Thing {
 	public Rectangle2D getRect() {
 		return outline;
 	}
+	
+	public void draw(Graphics g) {
+		TextureUtil.drawImage(g, getImage(), (int) angle, (int) outline.getX(), (int) outline.getY());
+	}
 
 	public BufferedImage getImage() {
 		Image image = Images.getImage(imagePath, outline.getWidth(), outline.getHeight());
-		return TextureUtil.rotate(image, (int) angle, getWidth(), getHeight());
+		return (BufferedImage) image;
+		//return TextureUtil.rotate(image, (int) angle, getWidth(), getHeight());
 	}
-
+	private double xForce;
+	private double yForce;
 	public void enactForce(double newtons, double direction) {
-		double xF = newtons * Math.cos(Math.toRadians(direction));
-		double yF = newtons * Math.sin(Math.toRadians(direction));
-		xVel += xF / mass;
-		yVel += yF / mass;
+		xForce += newtons * Math.cos(Math.toRadians(direction));
+		yForce += newtons * Math.sin(Math.toRadians(direction));
+		//System.out.println(xForce + ", " + yForce);
+		//System.out.println(xVel + ", " + yVel);
+	}
+	
+	private static final double MU = .05;
+	private static final double G = 9.8;
+	
+	public void enactFriction() {
+		double friction = MU * (mass);
+		System.out.println(friction);
+		double direction = Math.atan2(yForce, xForce);
+		//System.out.println(xForce / Math.cos(direction));
+		//System.out.println(Math.toDegrees(direction));
+		if (friction < xForce / Math.cos(direction)) {
+			enactForce(friction,  Math.toDegrees(direction) + 180);
+		} else {
+			xForce = 0;
+			yForce = 0;
+		}
 	}
 
 	public void physUpdate() {
+		enactFriction();
+		xVel += xForce / mass;
+		yVel += yForce / mass;
+		xForce = 0;
+		yForce = 0;
 		if (xVel != 0 || yVel != 0) {
-			outline.setRect(outline.getY() + xVel, outline.getX() + yVel, getWidth(), getHeight());
-			boolean move = Core.world.checkAllCollisions(this, layer);
+			outline = new Rectangle2D.Double(outline.getX() + xVel, outline.getY() + yVel, getWidth(), getHeight());
+			boolean move = true;//Core.world.checkAllCollisions(this, layer);
+			//System.out.println(outline.getX());
 			if (!move) {
 				outline.setRect(outline.getY() - xVel, outline.getX() - yVel, getWidth(), getHeight());
 			}
