@@ -7,8 +7,12 @@ import world.Things.Thing;
 
 public class Chunk implements Serializable {
 	private Layer[] layers;
+	
 	public Chunk() {
 		layers = new Layer[World.WORLD_DEPTH];
+		for (int i = 0; i < World.WORLD_DEPTH; i++) {
+			layers[i] = new Layer();
+		}
 	}
 	
 	public void addToLayer(Thing thing, int layer) {

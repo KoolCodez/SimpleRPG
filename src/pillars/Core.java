@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,37 +22,24 @@ public class Core {
 	public static World world;
 	
 	public static void main(String[] args) {
-		System.out.println("Hello");
-		PointMap<String> p = new PointMap<String>();
-		System.out.println("Goodbye");
-		JFrame f = new JFrame("test");
-		f.setVisible(true);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		f.setBounds(0, 0, d.width, d.height);
 		image = Images.getImage("Orange.png", 100, 100);
+		World world = new World();
 		Thing t = new Thing(0, 0, 100, 100, "Orange.png", new Material(), 100, 1);
+		world.addThing(0, 0, t, 0);
+		//t.enactImpulse(10, 0);
 		JPanel panel = new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
-				//g.drawImage(image, 0, 0, null);
-				t.draw(g);
-				t.enactForce(5.1, 45);
-				t.physUpdate();
-				//rotate++;
-				//g.drawRect(20, 20, 100, 100);
+				List<Thing> things = world.getAllThings();
+				for (Thing t : things) {
+					t.draw(g);
+					t.enactForce(5, 90);
+				}
 			}
 		};
 		panel.setVisible(true);
-		f.add(panel);
-		while (true) {
-			f.revalidate();
-			f.repaint();
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		panel.setBounds(0, 0, d.width, d.height);
+		Display display = new Display(d.width, d.height, "SimpleRPG", panel);
 	}
 }

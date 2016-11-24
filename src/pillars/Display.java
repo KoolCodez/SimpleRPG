@@ -41,6 +41,8 @@ public class Display {
 		frame = new JFrame(name);
 		frame.setBounds(0, 0, width + 16, height + 39);
 		//frame.getContentPane().setSize(1000, 1000);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		//frame.setUndecorated(true);
 		frame.setVisible(true);
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,13 +60,14 @@ public class Display {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				
-				frame.getContentPane().revalidate();
-				frame.getContentPane().repaint();
-				try {
-					sleep(SLEEP_MILLIS);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				while (true) {
+					frame.getContentPane().revalidate();
+					frame.getContentPane().repaint();
+					try {
+						sleep(SLEEP_MILLIS);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		};

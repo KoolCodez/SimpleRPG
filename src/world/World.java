@@ -1,6 +1,7 @@
 package world;
 
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.List;
 
 import Utility.PointMap;
@@ -11,6 +12,62 @@ public class World {
 	
 	private PointMap<Chunk> chunks;
 	public static final int WORLD_DEPTH = 5;
+	public static final int MILLIS_PER_TICK = 20;
+	public Thread ticker;
+	
+	public World() {
+		chunks = new PointMap<Chunk>();
+		createTicker();
+	}
+	
+	public void addThing(int x, int y, Thing thing, int layer) {
+		Chunk c = chunks.get(x, y);
+		if (c == null) {
+			c = new Chunk();
+			chunks.put(x, y,  c);
+		}
+		c.addToLayer(thing, layer);
+	}
+	
+	private void createTicker() {
+		World world = this;
+		ticker = new Thread() {
+			@Override
+			public void run() {
+				while (true) {
+					synchronized (world) {
+						world.notifyAll();
+					}
+					updatePhysics();
+					try {
+						sleep(MILLIS_PER_TICK);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		ticker.start();
+	}
+	
+	public void updatePhysics() {
+		List<Thing> things = getAllThings();
+		for (Thing t : things) {
+			t.physUpdate();
+		}
+	}
+	
+	public List<Thing> getAllThings() {
+		List<Thing> thingsList = new ArrayList<>();
+		List<Chunk> chunkList = chunks.getAllEntries();
+		for (Chunk c : chunkList) {
+			for (int i = 0; i < WORLD_DEPTH; i++) {
+				List<Thing> things = c.getThingsInLayer(i);
+				thingsList.addAll(things);
+			}
+		}
+		return thingsList;
+	}
 	
 	public boolean checkAllCollisions(Thing thing, int layer) {
 		List<Chunk> chunkList = chunks.getAllEntries();

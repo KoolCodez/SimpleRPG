@@ -75,8 +75,13 @@ public class Thing {
 	public void enactForce(double newtons, double direction) {
 		xForce += newtons * Math.cos(Math.toRadians(direction));
 		yForce += newtons * Math.sin(Math.toRadians(direction));
-		//System.out.println(xForce + ", " + yForce);
-		//System.out.println(xVel + ", " + yVel);
+	}
+	
+	public void enactImpulse(double speed, double direction) {
+		if (xVel / Math.cos(direction) < speed) {
+			xVel = speed * Math.cos(Math.toRadians(direction));
+			yVel = speed * Math.sin(Math.toRadians(direction));
+		}
 	}
 	
 	private static final double MU = .05;
@@ -84,28 +89,29 @@ public class Thing {
 	
 	public void enactFriction() {
 		double friction = MU * (mass);
-		System.out.println(friction);
-		double direction = Math.atan2(yForce, xForce);
-		//System.out.println(xForce / Math.cos(direction));
-		//System.out.println(Math.toDegrees(direction));
-		if (friction < xForce / Math.cos(direction)) {
-			enactForce(friction,  Math.toDegrees(direction) + 180);
-		} else {
-			xForce = 0;
-			yForce = 0;
+		double direction = Math.atan2(yVel, xVel);
+		if (xVel / Math.cos(direction) > 0) {
+			if (Math.abs(xVel) < .01 && Math.abs(yVel) < .01) {
+				xVel = 0;
+				yVel = 0;
+			} else {
+				direction = Math.toRadians(Math.toDegrees(direction) + 180);
+				xVel += friction * Math.cos(direction) / mass;
+				yVel += friction * Math.sin(direction) / mass;
+			}
+			
 		}
 	}
 
 	public void physUpdate() {
-		enactFriction();
 		xVel += xForce / mass;
 		yVel += yForce / mass;
+		enactFriction();
 		xForce = 0;
 		yForce = 0;
 		if (xVel != 0 || yVel != 0) {
 			outline = new Rectangle2D.Double(outline.getX() + xVel, outline.getY() + yVel, getWidth(), getHeight());
 			boolean move = true;//Core.world.checkAllCollisions(this, layer);
-			//System.out.println(outline.getX());
 			if (!move) {
 				outline.setRect(outline.getY() - xVel, outline.getX() - yVel, getWidth(), getHeight());
 			}
