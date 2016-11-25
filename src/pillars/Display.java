@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.event.KeyEvent;
 import java.util.*;
 
 /*  Easy to use utility for displaying and changing panels in a JFrame
@@ -27,10 +28,15 @@ public class Display {
 	public Display(int width, int height, String name, JPanel mainPanel) {
 		this.width = width;
 		this.height = height;
+		
 		createFrame(name);
 		createOverlay();
+		
 		this.mainPanel = mainPanel;
 		overlay.add(mainPanel, 0);
+		inMap = overlay.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		actMap = overlay.getActionMap();
+		
 		overlayPanels = new Stack<JPanel>();
 		menuPanels = new Stack<JPanel>();
 		inMenuMode = false;
@@ -137,5 +143,12 @@ public class Display {
 		}
 		overlay.add(mainPanel);
 		//System.out.println("index of main = " + overlay.getIndexOf(mainPanel));
+	}
+	private InputMap inMap;
+	private ActionMap actMap;
+	public void addAction(Action action, int key, boolean onRelease) {
+		String tag = "tag: " + key;
+		inMap.put(KeyStroke.getKeyStroke(key, 0, onRelease), tag);
+		actMap.put(tag, action);
 	}
 }

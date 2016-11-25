@@ -20,13 +20,14 @@ public class Core {
 	public static BufferedImage image;
 	public static int rotate = 0;
 	public static World world;
+	public static Thing myThing;
 	
 	public static void main(String[] args) {
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		image = Images.getImage("Orange.png", 100, 100);
 		World world = new World();
-		Thing t = new Thing(0, 0, 100, 100, "Orange.png", new Material(), 100, 1);
-		world.addThing(0, 0, t, 0);
+		myThing = new Thing(0, 0, 100, 100, "Orange.png", new Material(), 100, 1);
+		world.addThing(0, 0, myThing, 0);
 		//t.enactImpulse(10, 0);
 		JPanel panel = new JPanel() {
 			@Override
@@ -34,12 +35,13 @@ public class Core {
 				List<Thing> things = world.getAllThings();
 				for (Thing t : things) {
 					t.draw(g);
-					t.enactForce(5, 90);
+					//t.enactForce(5, 90);
 				}
 			}
 		};
 		panel.setVisible(true);
 		panel.setBounds(0, 0, d.width, d.height);
 		Display display = new Display(d.width, d.height, "SimpleRPG", panel);
+		Control c = new Control(display);
 	}
 }
