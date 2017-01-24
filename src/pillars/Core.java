@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import Utility.Images;
 import Utility.PointMap;
 import Utility.TextureUtil;
+import graphics.Display;
 import world.World;
 import world.Things.Thing;
 import world.materials.Material;
@@ -42,6 +43,7 @@ public class Core {
 		panel.setVisible(true);
 		panel.setBounds(0, 0, d.width, d.height);
 		Display display = new Display(d.width, d.height, "SimpleRPG", panel);
+		display.start();
 		Control c = new Control(display);
 	}
 }

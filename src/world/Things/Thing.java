@@ -110,6 +110,9 @@ public class Thing {
 		xForce = 0;
 		yForce = 0;
 		if (xVel != 0 || yVel != 0) {
+			if (outline.getY() > 1000) {
+				outline = new Rectangle2D.Double(outline.getX() + xVel, yVel, getWidth(), getHeight());
+			}
 			outline = new Rectangle2D.Double(outline.getX() + xVel, outline.getY() + yVel, getWidth(), getHeight());
 			boolean move = true;//Core.world.checkAllCollisions(this, layer);
 			if (!move) {

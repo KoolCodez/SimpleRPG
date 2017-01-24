@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import datastorage.Point;
+
 public class PointMap<V> {
 	private TreeMap<Point, V> map;
 
